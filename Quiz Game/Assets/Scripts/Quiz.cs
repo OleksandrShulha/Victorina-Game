@@ -29,10 +29,16 @@ public class Quiz : MonoBehaviour
     Timer timer;
 
 
+    [Header("Score")]
+    //поле для виведеня питання
+    [SerializeField] TextMeshProUGUI scoreText;
+    int score = 0;
+
+
     void Start()
     {
         timer = FindAnyObjectByType<Timer>();
-
+        scoreText.text = "Score: " + score;
 
         //виводим питання і відповіді
         GetNextQuestion();
@@ -52,23 +58,25 @@ public class Quiz : MonoBehaviour
             DisplayAnswer(-1);
             SetButtonState(false);
         }
-
     }
 
     void GetNextQuestion()
     {
+        if(qustion.Count > 0)
+        {
+            SetButtonState(true);  //включаеем всі кнопки
+            SetDefaultButtonSprite(); //на всі кнопкі вімашем спрайт по умолчанію
+            GetRendomQuestion();
+            DisplayQuestion(); //виводим питання
+        }
 
-        SetButtonState(true);  //включаеем всі кнопки
-        SetDefaultButtonSprite(); //на всі кнопкі вімашем спрайт по умолчанію
-        GetRendomQuestion();
-        DisplayQuestion(); //виводим питання
     }
 
     void GetRendomQuestion()
     {
-        int index = UnityEngine.Random.Range(0, qustion.Count-1);
-        Debug.Log(index);
+        int index = UnityEngine.Random.Range(0, qustion.Count);
         qustionCurent = qustion[index];
+
     }
 
     void DisplayAnswer(int index)
@@ -79,21 +87,29 @@ public class Quiz : MonoBehaviour
             Image buttonImage = answerButtons[index].GetComponent<Image>();
             answerButtons[index].GetComponent<Image>().color = Color.green;
             buttonImage.sprite = correcAnswerSprite;
+            score += 1;
+            scoreText.text = "Score: " + score;
+
 
             //можна і так:
             // answerButtons[index].GetComponent<Image>().sprite = correcAnswerSprite;
         }
         else
         {
-            
+
+
             if (index >=0)
             {
                 questionText.text = "Dont Corecr!";
                 answerButtons[index].GetComponent<Image>().color = Color.red;
+                score -= 1;
+                scoreText.text = "Score: " + score;
+
             }
             else
             {
                 questionText.text = "Time is over";
+                
             }
             answerButtons[qustionCurent.GetCorrectIndexAnswer()].GetComponent<Image>().sprite = correcAnswerSprite;
         }
